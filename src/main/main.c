@@ -1209,6 +1209,12 @@ static void load_dd_rom(uint8_t* rom, size_t* rom_size, uint8_t* disk_region)
 
     /* load and swap DD IPL ROM */
     *rom_size = g_ifile_storage_ro.size(&dd_rom);
+    if (*rom_size < 4 || *rom_size > DD_ROM_MAX_SIZE) {
+        DebugMessage(M64MSG_ERROR, "Invalid DD IPL ROM size: %zu. Disabling 64DD", *rom_size);
+        close_file_storage(&dd_rom);
+        *rom_size = 0;
+        return;
+    }
     memcpy(rom, g_ifile_storage_ro.data(&dd_rom), *rom_size);
     close_file_storage(&dd_rom);
 

@@ -992,6 +992,12 @@ static int savestates_load_pj64(struct device* dev,
     curr += 4;
 
     SaveRDRAMSize = GETDATA(curr, uint32_t);
+    if (SaveRDRAMSize != dev->rdram.dram_size)
+    {
+        main_message(M64MSG_STATUS, OSD_BOTTOM_LEFT,
+            "State RDRAM size does not match current emulator configuration.");
+        return 0;
+    }
 
     /* Read the rest of the savestate into memory. */
     savestateSize = SaveRDRAMSize + 0x2754;
@@ -1927,7 +1933,7 @@ static int savestates_save_pj64(const struct device* dev,
                                 int (*write_func)(void *, const void *, size_t))
 {
     unsigned int i;
-    unsigned int SaveRDRAMSize = RDRAM_MAX_SIZE;
+    unsigned int SaveRDRAMSize = (unsigned int) dev->rdram.dram_size;
 
     size_t savestateSize;
     unsigned char *savestateData, *curr;
